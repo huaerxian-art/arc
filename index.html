@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ARCX5 — Own the top 5 of Arc, airdropped to holders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgDark: "#0b0c10",
+                        bgCard: "#14161b",
+                        accent: "#48e6b7",
+                        redDown: "#f87171",
+                        greenUp: "#4ade80",
+                        textMuted: "#9ca3af"
+                    },
+                    fontFamily: {
+                        mono: ["JetBrains Mono", "Consolas", "monospace"],
+                        sans: ["Inter", "system-ui", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color:#0b0c10;
+            color:#e5e7eb;
+        }
+        .hash {
+            font-family:JetBrains Mono,monospace;
+            color:#48e6b7
+        }
+        .table-row {
+            border-bottom:1px solid #22262f
+        }
+        ::-webkit-scrollbar {
+            width:6px;height:6px
+        }
+        ::-webkit-scrollbar-thumb {
+            background:#2a2e38;border-radius:4px
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+        <!-- Hero Section -->
+        <section id="hero" class="mb-20">
+            <div class="mb-6">
+                <div class="text-accent font-mono text-sm mb-2">5% of every trade → the top 5 of Arc</div>
+                <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+                    The top 5 of Arc,<br/>
+                    <span class="text-accent">bought and airdropped</span><br/>
+                    to every holder
+                </h1>
+            </div>
+            <p class="text-textMuted text-lg max-w-3xl mb-8">
+                ARCX5 takes 5% of every trade, buys the five strongest tokens on Arc, and airdrops them straight to holders — no staking, no claiming.
+            </p>
+            <div class="flex flex-wrap gap-4 mb-12">
+                <a href="#" class="bg-accent text-bgDark px-5 py-3 rounded font-semibold">Buy $ARCX5</a>
+                <a href="#distributions" class="border border-gray-700 px-5 py-3 rounded hover:border-accent transition">Airdrops to holders →</a>
+                <a href="#how-works" class="border border-gray-700 px-5 py-3 rounded hover:border-accent transition">How it works</a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-sm">
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">Built on</div>
+                    <div>Arc — Circle's USDC-native L1</div>
+                </div>
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">Arc</div>
+                    <div>Circle USDC gas</div>
+                </div>
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">Index weighting</div>
+                    <div>Top 5 by market cap</div>
+                </div>
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">Rebalanced</div>
+                    <div>weekly</div>
+                </div>
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">5% fee → buys</div>
+                    <div>Weakest token rotated out</div>
+                </div>
+                <div class="bg-bgCard p-4 rounded">
+                    <div class="text-textMuted">airdrop: every 30 min</div>
+                    <div>claim: none, auto</div>
+                </div>
+            </div>
+            <div class="mt-6 text-textMuted">Rounds paid to holders: <span class="text-white" id="roundCount">Loading...</span></div>
+            <div class="mt-2 text-textMuted">Auto-buy. Auto-airdrop.</div>
+            <p class="mt-2">5% of every trade, straight back to holders</p>
+        </section>
+
+        <!-- How it works -->
+        <section id="how-works" class="mb-20">
+            <h2 class="text-3xl font-bold mb-8">How it works</h2>
+            <p class="text-textMuted mb-6">Three steps, on repeat</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="text-accent font-mono text-2xl mb-3">01</div>
+                    <h3 class="text-xl font-semibold mb-2">5% fee on every trade</h3>
+                    <p class="text-textMuted">Every buy and sell of $ARCX5 routes 5% into the index treasury, denominated in USDC on Arc.</p>
+                </div>
+                <div>
+                    <div class="text-accent font-mono text-2xl mb-3">02</div>
+                    <h3 class="text-xl font-semibold mb-2">Buy the top 5 of Arc</h3>
+                    <p class="text-textMuted">The treasury buys the tokens in the index, the strongest five tokens on the Arc network.</p>
+                </div>
+                <div>
+                    <div class="text-accent font-mono text-2xl mb-3">03</div>
+                    <h3 class="text-xl font-semibold mb-2">Airdrop to holders</h3>
+                    <p class="text-textMuted">Those tokens are airdropped straight to $ARCX5 holders. No staking, no claiming. Hold at least 0.01% of the supply to qualify.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Index 代币表格 -->
+        <section id="index" class="mb-20">
+            <h2 class="text-3xl font-bold mb-4">The Index</h2>
+            <p class="text-textMuted mb-2">The tokens in the index</p>
+            <p class="text-textMuted mb-6">Ranked by market cap. These are the tokens the 5% fee buys and airdrops to holders. <span class="font-mono">Live data</span></p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-textMuted border-b border-[#22262f]">
+                            <th class="text-left py-3 pr-2">#</th>
+                            <th class="text-left py-3 pr-2">Token</th>
+                            <th class="text-left py-3 pr-2">Symbol</th>
+                            <th class="text-right py-3 pr-2">Market cap</th>
+                            <th class="text-right py-3 pr-2">24h</th>
+                            <th class="text-right py-3">Mcap share</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tokenTableBody">
+                        <tr><td colspan="6" class="py-4 text-center text-textMuted">Loading token data from Arc...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-textMuted mt-3 text-sm">Every round buys the tokens in this table with the fees and airdrops them to holders. Market cap and 24h data from the Arc pools.</p>
+        </section>
+
+        <!-- Distributions -->
+        <section id="distributions" class="mb-16">
+            <h2 class="text-3xl font-bold mb-4">Distributions</h2>
+            <p class="text-textMuted mb-6">Airdrops, on the clock</p>
+
+            <div class="bg-bgCard p-5 rounded mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <div class="text-textMuted text-sm">Last round</div>
+                        <div class="font-mono" id="lastRoundTime">Loading...</div>
+                    </div>
+                    <div>
+                        <div class="text-textMuted text-sm">Next distribution in</div>
+                        <div class="font-mono text-accent" id="countdown">--:--</div>
+                    </div>
+                    <div>
+                        <div class="text-textMuted text-sm">Airdrops paid</div>
+                        <div id="airdropPaid">Loading...</div>
+                    </div>
+                    <div>
+                        <div class="text-textMuted text-sm">Holders paid last round</div>
+                        <div id="holderCount">Loading...</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                        <div class="text-textMuted text-sm">Fees collected</div>
+                        <div id="feeCollected">$0</div>
+                    </div>
+                    <div>
+                        <div class="text-textMuted text-sm">Being airdropped now</div>
+                        <div id="airdropNow">$0</div>
+                    </div>
+                    <div>
+                        <div class="text-textMuted text-sm">Waiting at Argus</div>
+                        <div>$0 <span class="text-textMuted text-xs">live</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4">Airdropped so far, by token</h3>
+            <div class="overflow-x-auto mb-10">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-textMuted border-b border-[#22262f]">
+                            <th class="text-left py-2">Token</th>
+                            <th class="text-right py-2">Total sent</th>
+                            <th class="text-right py-2">Transfers</th>
+                        </tr>
+                    </thead>
+                    <tbody id="airdropSummaryTable">
+                        <tr><td colspan="3" class="py-3 text-center text-textMuted">Loading summary...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4">Recent Rounds</h3>
+            <div class="space-y-4" id="roundList">
+                <div class="bg-bgCard p-4 rounded">
+                    <p class="text-textMuted">Loading airdrop history...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 后端API地址，部署VPS后改成公网地址
+        const API_BASE = "http://localhost:3000/api";
+
+        // 加载Top5代币表格
+        async function loadTokenTable() {
+            const res = await fetch(`${API_BASE}/index-tokens`);
+            const tokens = await res.json();
+            const tbody = document.getElementById("tokenTableBody");
+            tbody.innerHTML = "";
+            tokens.forEach((item, idx) => {
+                const row = document.createElement("tr");
+                row.className = "table-row";
+                const changeClass = Number(item.change_24h) >= 0 ? "text-greenUp" : "text-redDown";
+                row.innerHTML = `
+                    <td class="py-3">${idx+1}</td>
+                    <td>${item.name}</td>
+                    <td>$${item.symbol}</td>
+                    <td class="text-right">$${Number(item.market_cap).toLocaleString()}</td>
+                    <td class="text-right ${changeClass}">${Number(item.change_24h).toFixed(2)}%</td>
+                    <td class="text-right">${Number(item.mcap_share).toFixed(2)}%</td>
+                `;
+                tbody.appendChild(row);
+            })
+        }
+
+        // 加载空投数据、汇总表、最近轮次
+        async function loadDistributions() {
+            const res = await fetch(`${API_BASE}/distributions`);
+            const {distEvents, summary} = await res.json();
+            const roundList = document.getElementById("roundList");
+            const summaryTable = document.getElementById("airdropSummaryTable");
+            roundList.innerHTML = "";
+            summaryTable.innerHTML = "";
+
+            // 统计总轮次
+            document.getElementById("roundCount").innerText = distEvents.length;
+            document.getElementById("airdropPaid").innerText = `${distEvents.length} rounds`;
+            if(distEvents.length > 0) {
+                document.getElementById("lastRoundTime").innerText = `Block ${distEvents[0].blockNumber}`;
+            }
+
+            // Airdropped so far by token
+            Object.keys(summary).forEach(sym => {
+                const tr = document.createElement("tr");
+                tr.className = "table-row";
+                tr.innerHTML = `
+                    <td>${sym}</td>
+                    <td class="text-right">${Number(summary[sym].total).toLocaleString()}</td>
+                    <td class="text-right">${summary[sym].transfers}</td>
+                `;
+                summaryTable.appendChild(tr);
+            })
+
+            // Recent Rounds，取最近5轮
+            const recent = distEvents.slice(0,5);
+            recent.forEach(tx => {
+                const div = document.createElement("div");
+                div.className = "bg-bgCard p-4 rounded";
+                div.innerHTML = `
+                    <div class="font-mono text-sm mb-2">Block ${tx.blockNumber}</div>
+                    <div class="text-textMuted text-sm mb-2">Amount: ${Number(tx.value).toFixed(4)}</div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="hash text-xs">${tx.txHash}</span>
+                    </div>
+                `;
+                roundList.appendChild(div);
+            })
+        }
+
+        // 原版30分钟倒计时
+        function updateCountdown(){
+            const totalSeconds = 30 * 60;
+            let start = parseInt(localStorage.getItem("cdStart") || Date.now()/1000);
+            localStorage.setItem("cdStart", start);
+            const elapsed = Date.now() / 1000 - start;
+            const remain = Math.max(0, totalSeconds - (elapsed % totalSeconds));
+            const m = Math.floor(remain / 60).toString().padStart(2,"0");
+            const s = Math.floor(remain % 60).toString().padStart(2,"0");
+            document.getElementById("countdown").innerText = `${m}:${s}`;
+        }
+
+        // 页面初始化
+        window.onload = async () => {
+            await loadTokenTable();
+            await loadDistributions();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            // 每30秒刷新链上数据
+            setInterval(async ()=>{
+                await loadTokenTable();
+                await loadDistributions();
+            }, 30000);
+        }
+    </script>
+</body>
+</html>
