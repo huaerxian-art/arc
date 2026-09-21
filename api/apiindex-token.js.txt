@@ -1,0 +1,24 @@
+const axios = require('axios');
+const cors = require('cors');
+const handler = cors()
+
+module.exports = async (req, res) => {
+  handler(req, res, async () => {
+    try {
+      const result = await axios.get("https://api.arclens.xyz/tokens?sort=market_cap&limit=5");
+      const raw = result.data;
+      const totalMcap = raw.reduce((sum, item) => sum + Number(item.market_cap), 0);
+      const data = raw.map((item) => ({
+        name: item.name,
+        symbol: item.symbol,
+        market_cap: item.market_cap,
+        change_24h: item.change_24h ?? 0,
+        mcap_share: (Number(item.market_cap) / totalMcap) * 100
+      }));
+      res.json(data);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({error: err.message});
+    }
+  })
+}

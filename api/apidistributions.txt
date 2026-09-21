@@ -1,0 +1,60 @@
+const { Web3 } = require('web3');
+const cors = require('cors');
+const handler = cors()
+
+const ARC_RPC = "https://rpc.mainnet.arc.io";
+const web3 = new Web3(new Web3.providers.HttpProvider(ARC_RPC));
+
+const ERC20_ABI = [
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "from", "type": "address"},
+      {"indexed": true, "name": "to", "type": "address"},
+      {"indexed": false, "name": "value", "type": "uint256"}
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "type": "function"
+  }
+];
+
+module.exports = async (req, res) => {
+  handler(req, res, async () => {
+    try {
+      const contractAddr = process.env.ARCX5_CONTRACT;
+      if (!contractAddr) return res.status(500).json({error: "ARCX5_CONTRACT env missing"});
+      const contract = new web3.eth.Contract(ERC20_ABI, contractAddr);
+      const latestBlock = await web3.eth.getBlockNumber();
+      const fromBlock = latestBlock - 3000;
+      const events = await contract.getPastEvents("Transfer", {fromBlock, toBlock: "latest"});
+      const distEvents = events.map(e => ({
+        txHash: e.transactionHash,
+        from: e.returnValues.from,
+        to: e.returnValues.to,
+        value: web3.utils.fromWei(e.returnValues.value, "ether"),
+        blockNumber: e.blockNumber
+      })).reverse();
+
+      const tokenSummary = {};
+      distEvents.forEach(tx => {
+        const sym = "ARCX5";
+        if (!tokenSummary[sym]) {
+          tokenSummary[sym] = {total: 0, transfers: 0};
+        }
+        tokenSummary[sym].total += Number(tx.value);
+        tokenSummary[sym].transfers +=1;
+      });
+      res.json({distEvents, summary: tokenSummary});
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({error: err.message});
+    }
+  })
+}
